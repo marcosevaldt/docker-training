@@ -1,0 +1,24 @@
+FROM php:7-fpm
+
+WORKDIR /var/www
+
+RUN apt-get update && apt-get install -y
+
+# Install PgSQL PDO
+RUN apt-get install -y libpq-dev \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
+
+# Install MySQL PDO
+RUN apt-get update && apt-get install -y libmcrypt-dev mysql-client git zip \
+&& docker-php-ext-install pdo_mysql
+
+RUN groupadd -g 1000 clients && \
+    useradd -g root -g clients -u 1000 clients && \
+    mkdir /home/clients && chown -R clients:clients /home/clients
+
+RUN chown -R clients:clients /var/www
+
+USER clients
+
+COPY ./ /var/www

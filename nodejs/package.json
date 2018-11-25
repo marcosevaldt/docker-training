@@ -1,0 +1,17 @@
+{
+  "name": "clients",
+  "version": "1.0.0",
+  "description": "Clients API",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Marcos Evaldt Ereno",
+  "license": "ISC"
+}

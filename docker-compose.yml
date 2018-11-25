@@ -1,0 +1,100 @@
+version: '3.3'
+volumes:
+  data:
+services:
+  mysql:
+    container_name: mysql-clients
+    hostname: mysql-clients
+    image: mysql:5.6
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./nodejs/database/:/docker-entrypoint-initdb.d/
+      - /etc/localtime:/etc/localtime
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db_clients
+  phpmyadmin:
+    container_name: phpmyadmin-clients
+    hostname: phpmyadmin-clients
+    image: phpmyadmin/phpmyadmin:latest
+    links:
+      - mysql
+    ports:
+      - 8084:80
+    environment:
+      - PMA_ARBITRARY=1
+  node:
+    container_name: node-clients
+    hostname: node-clients
+    image: "node:8"
+    user: "node"
+    working_dir: /home/node/app
+    links:
+      - mysql
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./nodejs/:/home/node/app
+    expose:
+      - "5000"
+    command: "npm start"
+    depends_on:
+      - mysql
+  web:
+     container_name: web-clients
+     hostname: web-clients
+     build:
+         context: ./laravel/docker/
+         dockerfile: web.docker
+     volumes:
+         - ./laravel/:/var/www
+     links:
+         - app
+  app:
+     container_name: app-clients
+     hostname: app-clients
+     build:
+         context: ./laravel/docker/
+         dockerfile: app.docker
+     volumes:
+         - ./laravel/:/var/www
+     depends_on:
+           - pgsql
+     links:
+           - pgsql
+  pgsql:
+    image: postgres
+    hostname: postgres-clients
+    container_name: postgres-clients
+    ports:
+    - "5432:5432"
+    environment:
+      - POSTGRES_USER=homestead
+      - POSTGRES_PASSWORD=secret
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-clients
+    hostname: pgadmin-clients
+    ports:
+    - "5050:8080"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4
+      - PGADMIN_DEFAULT_PASSWORD=secret
+    links:
+      - pgsql
+  composer:
+      image: composer:1.6
+      network_mode: host
+      container_name: composer-clients
+      user: "${UID}:${UID}"
+      command: install --prefer-dist --optimize-autoloader --ignore-platform-reqs
+      volumes:
+        - ./laravel/:/app
+        - ${HOME}:${HOME}
+        - /etc/passwd:/etc/passwd:ro
+        - /etc/group:/etc/group:ro
+networks:
+  default:
+    external:
+      name: clients
