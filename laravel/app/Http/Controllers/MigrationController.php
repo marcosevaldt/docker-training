@@ -133,7 +133,7 @@ class MigrationController extends Controller
     public function migrate()
     {
         $client   = new \GuzzleHttp\Client();
-        $response = $client->request('GET', 'http://node-clients:5000/clients/list');
+        $response = $client->request('GET', 'http://node.clients:5000/clients/list');
         $body     = $response->getBody();
         $content  = $body->getContents();
         $arr      = json_decode($content,TRUE);
