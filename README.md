@@ -1,4 +1,7 @@
 ### How to
+
+npm install inside /nodejs folder
+
 docker-compose up -d
 
 docker exec -it app-clients php artisan migrate
