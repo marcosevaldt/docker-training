@@ -13,6 +13,7 @@ use App\Message;
 use App\MessageStatus;
 use App\Reservation;
 use App\ReservationStatus;
+use GuzzleHttp\Client;
 use PagSeguro;
 
 class HomeController extends Controller
@@ -94,12 +95,13 @@ class HomeController extends Controller
     {       
         try{
             $sale        = Sale::find($id);
-            $credentials = 'email=marcosevaldt@gmail.com&token=53835DDF53754885A7B4824C42811248';
-            $curl        = curl_init("https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/$code?$credentials");
-            curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,false);
-            curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
-            $xml         = simplexml_load_string(curl_exec($curl));
-            curl_close($curl);
+            $client      = new Client;
+            $response    = $client->request('GET', "https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/$code", [
+                'query' => ['email' => env('PAGSEGURO_EMAIL'), 'token' => env('PAGSEGURO_TOKEN')],
+            ]);
+            $body        = $response->getBody();
+            $content     = $body->getContents();
+            $xml         = simplexml_load_string($content);
 
             if($xml->status !== $sale->status->id)
             {
