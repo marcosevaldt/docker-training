@@ -27,7 +27,7 @@ services:
       - PMA_ARBITRARY=1
   node:
     container_name: node-clients
-    hostname: node-clients
+    hostname: clients.node
     image: "node:8"
     user: "node"
     working_dir: /home/node/app
