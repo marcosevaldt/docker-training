@@ -38,7 +38,7 @@ class MigrationController extends Controller
     {
 
         $client    = new \GuzzleHttp\Client();
-        $response  = $client->request('GET', 'http://node-clients:5000/clients/list');
+        $response  = $client->request('GET', 'http://clients.node:5000/clients/list');
         $body      = $response->getBody();
         $content   = $body->getContents();
         $clients   = json_decode($content,TRUE);
