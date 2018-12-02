@@ -42,7 +42,6 @@ services:
     command: "npm start"
     depends_on:
       - mysql
-    restart: on-failure
   web:
      container_name: web-clients
      hostname: web-clients
